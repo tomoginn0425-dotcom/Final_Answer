@@ -30,18 +30,40 @@ for i, url in enumerate(urls):
             a_tag = item.find_parent("a")
             shop_url = a_tag["href"]
 
+
             shop_response = requests.get(shop_url, headers = headers)
             shop_response.encoding = "utf-8"
             html = shop_response.text
+
+            region_response = requests.get(shop_url, headers = headers)
+            region_response.encoding = "utf-8"
+            html = region_response.text
             time.sleep(3)
 
             shop_SOUP = BeautifulSoup(shop_response.text, "html.parser")
 
-            shop_items = shop_SOUP.find_all("span", class_="number")
+            tels = shop_SOUP.find_all("span", class_="number")
+            address = shop_SOUP.find("span", class_="region").text
+
+            pattern = r"(..?[都道府県])(.*?[市区町村])(.*)"
+            match = re.match(pattern, address)
+
+            if match:
+                prefecture = match.group(1)
+                city = match.group(2)
+                street = match.group(3)
+
 
             results.append({
-                "名前": item.text,
-                "TEL": [shop_item.text for shop_item in shop_items]
+                "店舗名": item.text,
+                "電話番号": [tel.text for tel in tels],
+                "メールアドレス":"",
+                "都道府県":prefecture,
+                "市区町村":city,
+                "番地":street,
+                "建物名":"",
+                "URL":"",
+                "SSL":"",
             })
             print("B")
     else:
@@ -56,11 +78,18 @@ for i, url in enumerate(urls):
 
             shop_SOUP = BeautifulSoup(shop_response.text, "html.parser")
 
-            shop_items = shop_SOUP.find_all("span", class_="number")
+            tels = shop_SOUP.find_all("span", class_="number")
 
             results.append({
-                "名前": item.text,
-                "TEL": [shop_item.text for shop_item in shop_items]
+                "店舗名": item.text,
+                "電話番号": [tel.text for tel in tels],
+                "メールアドレス":"",
+                "都道府県":prefecture,
+                "市区町村":city,
+                "番地":street,
+                "建物名":"",
+                "URL":"",
+                "SSL":"",
             })
 
             print("A")
