@@ -12,7 +12,6 @@ driver.get(url)
 time.sleep(3)
 
 shops = driver.find_elements(By.CLASS_NAME, "style_restaurantNameWrap__sOBYs")
-names = [shop.text for shop in shops]
 shop1_urls = [shop.find_element(By.XPATH, "..").get_attribute("href") for shop in shops]
 
 next_button = driver.find_element(By.CLASS_NAME, "style_nextIcon__Ad_pH")
@@ -26,9 +25,13 @@ shop_urls = shop1_urls + shop2_urls
 
 print(len(shop_urls))
 
+results = []
+
 for shop_url in shop_urls:
     driver.get(shop_url)
     time.sleep(3)
+
+    shop_name = driver.find_element(By.ID, "info-name").text
 
     tel = driver.find_element(By.CLASS_NAME, "number").text
     address = driver.find_element(By.CLASS_NAME, "region").text
@@ -45,7 +48,33 @@ for shop_url in shop_urls:
     except:
         locality = ""
 
-    print(prefecture)
-    print(city)
-    print(street)
-    print(locality if locality else "")
+    url_tag = driver.current_url
+
+    ssl = url_tag.startswith("https://")
+
+    try:
+        url_tag = driver.find_element(By.CSS_SELECTOR, "a.sv-of.double")
+        real_url = url_tag.get_attribute("href")
+        time.sleep(3)
+    except:
+        real_url = ""
+
+    results.append({
+                "店舗名": shop_name,
+                "電話番号": tel if tel else "",
+                "メールアドレス":"",#メールアドレスなかったです
+                "都道府県":prefecture,
+                "市区町村":city,
+                "番地":street,
+                "建物名":locality if locality else "",
+                "URL":real_url,
+                "SSL":ssl,
+            })
+
+print(results)
+
+df = pd.DataFrame(results)
+df = df.drop_duplicates(subset ="店舗名")
+df = df.head(50)
+
+df.to_csv("1-2.csv", index=False, encoding="utf-8-sig")

@@ -18,7 +18,7 @@ for i, url in enumerate(urls):
     response = requests.get(url, headers = headers)
     response.encoding = "utf-8"
     html = response.text
-    time.sleep(1)
+    time.sleep(3)
 
     soup = BeautifulSoup(response.text, "html.parser")
 
@@ -35,7 +35,7 @@ for i, url in enumerate(urls):
             shop_response.encoding = "utf-8"
             html = shop_response.text
 
-            time.sleep(1)
+            time.sleep(3)
 
             shop_SOUP = BeautifulSoup(html, "html.parser")
 
@@ -72,7 +72,6 @@ for i, url in enumerate(urls):
                 "URL":homepage_url,
                 "SSL":ssl,
             })
-            print("B")
 
     else:
         for item in items[:30]:
@@ -82,7 +81,7 @@ for i, url in enumerate(urls):
             shop_response = requests.get(shop_url, headers = headers)
             shop_response.encoding = "utf-8"
             html = shop_response.text
-            time.sleep(1)
+            time.sleep(3)
 
             shop_SOUP = BeautifulSoup(shop_response.text, "html.parser")
 
@@ -118,8 +117,6 @@ for i, url in enumerate(urls):
                 "URL":homepage_url,
                 "SSL":ssl,
             })
-
-            print("C")
 
 df = pd.DataFrame(results)
 df = df.drop_duplicates(subset ="店舗名")
